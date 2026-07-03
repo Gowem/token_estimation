@@ -218,13 +218,7 @@ if st.session_state.execution_result:
                 (result.input_tokens / 1_000_000) * model.input_price_per_million
                 + (result.output_tokens / 1_000_000) * model.output_price_per_million
             )
-            a1, a2, a3 = st.columns(3)
-            a1.metric("Actual input tokens", f"{result.input_tokens:,}")
-            a2.metric("Actual output tokens", f"{result.output_tokens:,}")
-            a3.metric("Actual cost", f"${actual_cost:.5f}")
+            a1, a2 = st.columns(2)
+            a1.metric("Actual output tokens", f"{result.output_tokens:,}")
+            a2.metric("Actual cost", f"${actual_cost:.5f}")
             st.caption(f"Reported by {result.reported_model}")
-
-            if estimation and not stale:
-                delta = result.input_tokens - estimation.input_tokens
-                base = max(estimation.input_tokens, 1)
-                st.caption(f"Estimate vs. actual input tokens: {delta:+,} ({abs(delta) / base * 100:.1f}% off)")
