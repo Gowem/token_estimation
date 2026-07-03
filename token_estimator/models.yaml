@@ -1,0 +1,71 @@
+# Configurable model registry for the Prompt Token Estimator.
+#
+# Add, remove, or edit entries here to change which models are offered in the
+# app -- no code changes required. `context_window: null` means the figure is
+# unverified; the estimator will skip context-limit checking for that model
+# and surface a warning instead of guessing.
+#
+# Currently Groq-only (the only provider this deployment has a key for).
+# To add another provider: add entries here with a new `provider` value,
+# implement a TokenizerStrategy in tokenizers.py and an Executor in
+# executors.py for it, and register both in their respective dicts --
+# estimator.py, models.py, and app.py need no changes.
+#
+# Pricing/context figures below were checked against groq.com/pricing on
+# 2026-07-03. Prices change -- re-verify before relying on this for real
+# budgeting.
+
+models:
+  - provider: groq
+    model_id: llama-3.1-8b-instant
+    display_name: "Llama 3.1 8B Instant (Groq)"
+    context_window: 128000
+    input_price_per_million: 0.05
+    output_price_per_million: 0.08
+    tokenizer: heuristic
+    notes: "groq.com/pricing, checked 2026-07-03."
+
+  - provider: groq
+    model_id: llama-3.3-70b-versatile
+    display_name: "Llama 3.3 70B Versatile (Groq)"
+    context_window: 128000
+    input_price_per_million: 0.59
+    output_price_per_million: 0.79
+    tokenizer: heuristic
+    notes: "groq.com/pricing, checked 2026-07-03."
+
+  - provider: groq
+    model_id: openai/gpt-oss-20b
+    display_name: "GPT-OSS 20B (Groq)"
+    context_window: 128000
+    input_price_per_million: 0.075
+    output_price_per_million: 0.30
+    tokenizer: heuristic
+    notes: "groq.com/pricing, checked 2026-07-03."
+
+  - provider: groq
+    model_id: openai/gpt-oss-120b
+    display_name: "GPT-OSS 120B (Groq)"
+    context_window: 128000
+    input_price_per_million: 0.15
+    output_price_per_million: 0.60
+    tokenizer: heuristic
+    notes: "groq.com/pricing, checked 2026-07-03."
+
+  - provider: groq
+    model_id: meta-llama/llama-4-scout-17b-16e-instruct
+    display_name: "Llama 4 Scout 17B (Groq)"
+    context_window: 128000
+    input_price_per_million: 0.11
+    output_price_per_million: 0.34
+    tokenizer: heuristic
+    notes: "groq.com/pricing, checked 2026-07-03."
+
+  - provider: groq
+    model_id: qwen/qwen3-32b
+    display_name: "Qwen3 32B (Groq)"
+    context_window: 131000
+    input_price_per_million: 0.29
+    output_price_per_million: 0.59
+    tokenizer: heuristic
+    notes: "groq.com/pricing, checked 2026-07-03."

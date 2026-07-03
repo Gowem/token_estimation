@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: prompt-token-estimator
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: GROQ_API_KEY
+        sync: false # set manually in the Render dashboard -- never committed to the repo
+    autoDeploy: true
