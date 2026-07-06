@@ -21,26 +21,21 @@ def test_explicit_sentence_count_scales_to_tokens():
     assert result.tokens == 40
 
 
-def test_short_answer_marker_predicts_small_output():
-    result = predict_output_tokens("Answer with one word: is the sky blue?")
-    assert result.tokens <= 50
+def test_small_prompt_scales_down():
+    # 10 words prompt scales to floor of 50 tokens
+    result = predict_output_tokens("hello world " * 5)
+    assert result.tokens == 50
 
-
-def test_code_marker_predicts_larger_output():
-    result = predict_output_tokens("Write a function that reverses a linked list in Python.")
-    assert result.tokens >= 500
-
-
-def test_long_form_marker_predicts_large_output():
-    result = predict_output_tokens("Write a comprehensive essay on the history of the printing press.")
-    assert result.tokens >= 700
+    # 100 words prompt scales to 120 tokens (100 * 1.2)
+    result = predict_output_tokens("word " * 100)
+    assert result.tokens == 120
 
 
 def test_fallback_scales_with_prompt_length_within_bounds():
     result = predict_output_tokens("word " * 1000)
     # The new scaling fallback scales up past 600 for larger inputs, capped at 4096.
     assert 150 <= result.tokens <= 4096
-    assert result.tokens == 625  # 600 + (1000 - 750) * 0.1
+    assert result.tokens == 675  # 600 + (1000 - 500) * 0.15
 
 
 def test_1000_line_prompt_scales_generously():
