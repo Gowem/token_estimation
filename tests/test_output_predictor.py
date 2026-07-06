@@ -38,4 +38,34 @@ def test_long_form_marker_predicts_large_output():
 
 def test_fallback_scales_with_prompt_length_within_bounds():
     result = predict_output_tokens("word " * 1000)
-    assert 150 <= result.tokens <= 600
+    # The new scaling fallback scales up past 600 for larger inputs, capped at 4096.
+    assert 150 <= result.tokens <= 4096
+    assert result.tokens == 625  # 600 + (1000 - 750) * 0.1
+
+
+def test_1000_line_prompt_scales_generously():
+    # Construct a prompt with 1050 lines and 15000 words
+    prompt_lines = ["word word word word word word word word word word word word word word word"] * 1050
+    prompt = "\n".join(prompt_lines)
+    result = predict_output_tokens(prompt)
+    assert result.tokens >= 2000
+    assert "Large prompt (>1000 lines)" in result.reason
+
+
+def test_floor_limits_for_explicit_cues():
+    # 1 word limit matches floor of 10
+    result_word = predict_output_tokens("Answer in 1 word.")
+    assert result_word.tokens == 10
+
+    # 1 token limit matches floor of 10
+    result_token = predict_output_tokens("Give me response in 1 token.")
+    assert result_token.tokens == 10
+
+    # 1 paragraph limit matches floor of 15
+    result_paragraph = predict_output_tokens("Answer in 1 paragraph.")
+    assert result_paragraph.tokens == 75  # 1 * 75 = 75 which is >= 15 floor
+
+    # 1 sentence limit matches floor of 10
+    result_sentence = predict_output_tokens("Answer in 1 sentence.")
+    assert result_sentence.tokens == 20  # 1 * 20 = 20 which is >= 10 floor
+

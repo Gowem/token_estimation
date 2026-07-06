@@ -16,7 +16,7 @@
 # budgeting.
 
 models:
-  - provider: groq
+  - provider: meta
     model_id: llama-3.1-8b-instant
     display_name: "Llama 3.1 8B Instant (Groq)"
     context_window: 128000
@@ -25,7 +25,7 @@ models:
     tokenizer: heuristic
     notes: "groq.com/pricing, checked 2026-07-03."
 
-  - provider: groq
+  - provider: meta
     model_id: llama-3.3-70b-versatile
     display_name: "Llama 3.3 70B Versatile (Groq)"
     context_window: 128000
@@ -34,7 +34,7 @@ models:
     tokenizer: heuristic
     notes: "groq.com/pricing, checked 2026-07-03."
 
-  - provider: groq
+  - provider: gpt
     model_id: openai/gpt-oss-20b
     display_name: "GPT-OSS 20B (Groq)"
     context_window: 128000
@@ -43,7 +43,7 @@ models:
     tokenizer: heuristic
     notes: "groq.com/pricing, checked 2026-07-03."
 
-  - provider: groq
+  - provider: gpt
     model_id: openai/gpt-oss-120b
     display_name: "GPT-OSS 120B (Groq)"
     context_window: 128000
@@ -52,7 +52,7 @@ models:
     tokenizer: heuristic
     notes: "groq.com/pricing, checked 2026-07-03."
 
-  - provider: groq
+  - provider: meta
     model_id: meta-llama/llama-4-scout-17b-16e-instruct
     display_name: "Llama 4 Scout 17B (Groq)"
     context_window: 128000

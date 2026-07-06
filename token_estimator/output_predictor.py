@@ -58,21 +58,26 @@ def predict_output_tokens(prompt: str) -> OutputPrediction:
 
     if match := _TOKEN_LIMIT_RE.search(text):
         n = int(match.group(1))
-        return OutputPrediction(n, f'Prompt explicitly asks for ~{n} tokens')
+        # Ensure a floor of at least 10 tokens
+        tokens = max(10, n)
+        return OutputPrediction(tokens, f'Prompt explicitly asks for ~{n} tokens')
 
     if match := _WORD_LIMIT_RE.search(text):
         n = int(match.group(1))
-        tokens = max(1, round(n * 1.3))
+        # Ensure a floor of at least 10 tokens
+        tokens = max(10, round(n * 1.3))
         return OutputPrediction(tokens, f"Prompt asks for ~{n} words (~1.3 tokens/word)")
 
     if match := _PARAGRAPH_LIMIT_RE.search(text):
         n = int(match.group(1))
-        tokens = max(1, round(n * 75))
+        # Ensure a floor of at least 15 tokens
+        tokens = max(15, round(n * 75))
         return OutputPrediction(tokens, f"Prompt asks for {n} paragraph(s) (~75 tokens/paragraph)")
 
     if match := _SENTENCE_LIMIT_RE.search(text):
         n = int(match.group(1))
-        tokens = max(1, round(n * 20))
+        # Ensure a floor of at least 10 tokens
+        tokens = max(10, round(n * 20))
         return OutputPrediction(tokens, f"Prompt asks for {n} sentence(s) (~20 tokens/sentence)")
 
     lowered = text.lower()
@@ -83,6 +88,20 @@ def predict_output_tokens(prompt: str) -> OutputPrediction:
     if any(marker in lowered for marker in _LONG_MARKERS):
         return OutputPrediction(900, "Prompt signals a long-form response")
 
+    line_count = len(text.splitlines())
     word_count = len(text.split())
-    scaled = max(150, min(600, round(word_count * 0.8)))
-    return OutputPrediction(scaled, "No explicit length cue -- scaled from prompt length")
+
+    if line_count >= 1000:
+        # For prompts over 1000 lines, provide a generous capacity scaling (15% of words, floor of 2000, ceil of 8000)
+        scaled = max(2000, min(8000, round(word_count * 0.15)))
+        reason = "Large prompt (>1000 lines) -- scaled from prompt length with high-capacity floor"
+    else:
+        # Standard fallback scaling
+        if word_count < 750:
+            scaled = max(150, round(word_count * 0.8))
+        else:
+            # Let it scale past 600 for large prompts up to 4096 tokens
+            scaled = min(4096, 600 + round((word_count - 750) * 0.1))
+        reason = "No explicit length cue -- scaled from prompt length"
+
+    return OutputPrediction(scaled, reason)

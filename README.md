@@ -68,6 +68,16 @@ streamlit run app.py
 pytest
 ```
 
+## Docs
+
+- [docs/one-pager.md](docs/one-pager.md) — design summary: how token estimation works, how
+  model support is structured, how the yes/no execution gate is implemented, and how the
+  system stays fast.
+- [docs/interview-prep.md](docs/interview-prep.md) — full project explanation plus a Q&A bank
+  for walking through the design in detail.
+- [docs/groq-billing.md](docs/groq-billing.md) — reference notes on Groq pricing/token
+  estimation research from early in the project (unverified model IDs flagged inline).
+
 ## Deploying on Render
 
 This is a single Streamlit app (frontend and backend in one process, no

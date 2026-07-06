@@ -9,6 +9,8 @@ def test_registry_loads_groq_models():
     registry = ModelRegistry.from_yaml(REGISTRY_PATH)
     grouped = registry.list_by_provider()
     assert "groq" in grouped
+    assert "gpt" in grouped
+    assert "meta" in grouped
     assert len(registry.all()) >= 4
 
 
@@ -21,7 +23,7 @@ def test_get_returns_model_for_known_id():
     registry = ModelRegistry.from_yaml(REGISTRY_PATH)
     model = registry.get("llama-3.1-8b-instant")
     assert model is not None
-    assert model.provider == "groq"
+    assert model.provider == "meta"
 
 
 def test_duplicate_model_id_rejected():

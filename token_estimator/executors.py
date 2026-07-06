@@ -46,7 +46,7 @@ class GroqExecutor(Executor):
             response = client.chat.completions.create(
                 model=model.model_id,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=max_output_tokens or None,
+                max_tokens=None,  # Do not truncate execution based on cost-estimation settings
             )
         except Exception as exc:
             raise ExecutionError(f"Groq API request failed: {exc}") from exc
@@ -63,6 +63,8 @@ class GroqExecutor(Executor):
 
 EXECUTORS: dict[str, Executor] = {
     "groq": GroqExecutor(),
+    "gpt": GroqExecutor(),
+    "meta": GroqExecutor(),
 }
 
 

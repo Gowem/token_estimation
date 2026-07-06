@@ -24,7 +24,6 @@ TOKENIZER_LABELS = {
 }
 
 
-@st.cache_resource
 def load_registry() -> ModelRegistry:
     return ModelRegistry.from_yaml(REGISTRY_PATH)
 
