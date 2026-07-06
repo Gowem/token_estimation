@@ -5,10 +5,10 @@ from dataclasses import dataclass
 
 DEFAULT_TOKENS = 200  # conservative fallback when there's no prompt yet
 
-_TOKEN_LIMIT_RE = re.compile(r"\b(\d{1,6})\s*tokens?\b", re.IGNORECASE)
-_WORD_LIMIT_RE = re.compile(r"\b(\d{1,5})\s*words?\b", re.IGNORECASE)
-_PARAGRAPH_LIMIT_RE = re.compile(r"\b(\d{1,3})\s*paragraphs?\b", re.IGNORECASE)
-_SENTENCE_LIMIT_RE = re.compile(r"\b(\d{1,3})\s*sentences?\b", re.IGNORECASE)
+_TOKEN_LIMIT_RE = re.compile(r"\b(\d{1,6})[^\S\r\n]*tokens?\b", re.IGNORECASE)
+_WORD_LIMIT_RE = re.compile(r"\b(\d{1,5})[^\S\r\n]*words?\b", re.IGNORECASE)
+_PARAGRAPH_LIMIT_RE = re.compile(r"\b(\d{1,3})[^\S\r\n]*paragraphs?\b", re.IGNORECASE)
+_SENTENCE_LIMIT_RE = re.compile(r"\b(\d{1,3})[^\S\r\n]*sentences?\b", re.IGNORECASE)
 
 
 

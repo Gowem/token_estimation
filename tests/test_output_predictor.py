@@ -64,3 +64,10 @@ def test_floor_limits_for_explicit_cues():
     result_sentence = predict_output_tokens("Answer in 1 sentence.")
     assert result_sentence.tokens == 20  # 1 * 20 = 20 which is >= 10 floor
 
+
+def test_numbers_and_units_on_different_lines_do_not_match():
+    prompt = "There are 10\nwords in this list."
+    result = predict_output_tokens(prompt)
+    assert result.tokens == 50
+    assert "No explicit length cue" in result.reason
+
