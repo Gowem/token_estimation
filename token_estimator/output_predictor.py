@@ -58,33 +58,37 @@ def predict_output_tokens(prompt: str) -> OutputPrediction:
     if not normalized_text:
         return OutputPrediction(DEFAULT_TOKENS, "No prompt yet -- conservative default")
 
-    if match := _TOKEN_LIMIT_RE.search(normalized_text):
-        n = int(match.group(1))
-        # Ensure a floor of at least 10 tokens
-        tokens = max(10, n)
-        return OutputPrediction(tokens, f'Prompt explicitly asks for ~{n} tokens')
-
-    if match := _WORD_LIMIT_RE.search(normalized_text):
-        n = int(match.group(1))
-        # Ensure a floor of at least 10 tokens
-        tokens = max(10, round(n * 1.3))
-        return OutputPrediction(tokens, f"Prompt asks for ~{n} words (~1.3 tokens/word)")
-
-    if match := _PARAGRAPH_LIMIT_RE.search(normalized_text):
-        n = int(match.group(1))
-        # Ensure a floor of at least 15 tokens
-        tokens = max(15, round(n * 75))
-        return OutputPrediction(tokens, f"Prompt asks for {n} paragraph(s) (~75 tokens/paragraph)")
-
-    if match := _SENTENCE_LIMIT_RE.search(normalized_text):
-        n = int(match.group(1))
-        # Ensure a floor of at least 10 tokens
-        tokens = max(10, round(n * 20))
-        return OutputPrediction(tokens, f"Prompt asks for {n} sentence(s) (~20 tokens/sentence)")
-
     word_count = len(normalized_text.split())
     # Heuristic: 1.35 tokens per word for English text and code
     input_token_estimate = round(word_count * 1.35)
+
+    # If the prompt is short, check for explicit length instructions.
+    # For larger prompts, ignore potential regex matches to prevent false positives
+    # from data/text content, and rely on proportional scaling.
+    if input_token_estimate < 150:
+        if match := _TOKEN_LIMIT_RE.search(normalized_text):
+            n = int(match.group(1))
+            # Ensure a floor of at least 10 tokens
+            tokens = max(10, n)
+            return OutputPrediction(tokens, f'Prompt explicitly asks for ~{n} tokens')
+
+        if match := _WORD_LIMIT_RE.search(normalized_text):
+            n = int(match.group(1))
+            # Ensure a floor of at least 10 tokens
+            tokens = max(10, round(n * 1.3))
+            return OutputPrediction(tokens, f"Prompt asks for ~{n} words (~1.3 tokens/word)")
+
+        if match := _PARAGRAPH_LIMIT_RE.search(normalized_text):
+            n = int(match.group(1))
+            # Ensure a floor of at least 15 tokens
+            tokens = max(15, round(n * 75))
+            return OutputPrediction(tokens, f"Prompt asks for {n} paragraph(s) (~75 tokens/paragraph)")
+
+        if match := _SENTENCE_LIMIT_RE.search(normalized_text):
+            n = int(match.group(1))
+            # Ensure a floor of at least 10 tokens
+            tokens = max(10, round(n * 20))
+            return OutputPrediction(tokens, f"Prompt asks for {n} sentence(s) (~20 tokens/sentence)")
 
     # Base the expected output on 30% of the estimated input tokens,
     # bounded between a minimum of 150 tokens and a maximum of 4096 tokens.
