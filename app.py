@@ -59,10 +59,6 @@ for key, default in {
 registry = load_registry()
 
 
-def on_tokens_changed():
-    st.session_state["expected_output_tokens"] = st.session_state["expected_output_tokens_widget"]
-
-
 # The prompt widget is instantiated further down (in the main column), but
 # its value from the previous run is already in session_state by this point
 # -- read it here so the sidebar's output-token predictor can react to it.
@@ -102,13 +98,12 @@ with st.sidebar:
         max_value=200_000,
         value=int(st.session_state["expected_output_tokens"]),
         step=100,
-        key="expected_output_tokens_widget",
-        on_change=on_tokens_changed,
         help="Predicted from the prompt's content and any length cues in it (e.g. 'in 3 "
         "sentences', 'write a function'). Re-predicted whenever you edit the prompt; you can "
         "still adjust it by hand. Only used to estimate cost before running -- the real output "
         "length is never known until the model responds.",
-     )
+    )
+    st.session_state["expected_output_tokens"] = expected_output_tokens
     st.caption(f"Predicted: {prediction.reason}")
 
     st.divider()
