@@ -18,7 +18,7 @@
 models:
   - provider: meta
     model_id: llama-3.1-8b-instant
-    display_name: "Llama 3.1 8B Instant (Groq)"
+    display_name: "Llama 3.1 8B Instant"
     context_window: 128000
     input_price_per_million: 0.05
     output_price_per_million: 0.08
@@ -27,7 +27,7 @@ models:
 
   - provider: meta
     model_id: llama-3.3-70b-versatile
-    display_name: "Llama 3.3 70B Versatile (Groq)"
+    display_name: "Llama 3.3 70B Versatile"
     context_window: 128000
     input_price_per_million: 0.59
     output_price_per_million: 0.79
@@ -36,7 +36,7 @@ models:
 
   - provider: gpt
     model_id: openai/gpt-oss-20b
-    display_name: "GPT-OSS 20B (Groq)"
+    display_name: "GPT-OSS 20B"
     context_window: 128000
     input_price_per_million: 0.075
     output_price_per_million: 0.30
@@ -45,7 +45,7 @@ models:
 
   - provider: gpt
     model_id: openai/gpt-oss-120b
-    display_name: "GPT-OSS 120B (Groq)"
+    display_name: "GPT-OSS 120B"
     context_window: 128000
     input_price_per_million: 0.15
     output_price_per_million: 0.60
@@ -54,7 +54,7 @@ models:
 
   - provider: meta
     model_id: meta-llama/llama-4-scout-17b-16e-instruct
-    display_name: "Llama 4 Scout 17B (Groq)"
+    display_name: "Llama 4 Scout 17B"
     context_window: 128000
     input_price_per_million: 0.11
     output_price_per_million: 0.34
