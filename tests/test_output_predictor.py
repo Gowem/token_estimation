@@ -21,32 +21,6 @@ def test_explicit_sentence_count_scales_to_tokens():
     assert result.tokens == 40
 
 
-def test_small_prompt_scales_down():
-    # 10 words prompt scales to floor of 50 tokens
-    result = predict_output_tokens("hello world " * 5)
-    assert result.tokens == 50
-
-    # 100 words prompt scales to 120 tokens (100 * 1.2)
-    result = predict_output_tokens("word " * 100)
-    assert result.tokens == 120
-
-
-def test_fallback_scales_with_prompt_length_within_bounds():
-    result = predict_output_tokens("word " * 1000)
-    # The new scaling fallback scales up past 600 for larger inputs, capped at 4096.
-    assert 150 <= result.tokens <= 4096
-    assert result.tokens == 675  # 600 + (1000 - 500) * 0.15
-
-
-def test_1000_line_prompt_scales_generously():
-    # Construct a prompt with 1050 lines and 15000 words
-    prompt_lines = ["word word word word word word word word word word word word word word word"] * 1050
-    prompt = "\n".join(prompt_lines)
-    result = predict_output_tokens(prompt)
-    assert result.tokens >= 2000
-    assert "Large prompt (>1000 lines)" in result.reason
-
-
 def test_floor_limits_for_explicit_cues():
     # 1 word limit matches floor of 10
     result_word = predict_output_tokens("Answer in 1 word.")
@@ -68,6 +42,45 @@ def test_floor_limits_for_explicit_cues():
 def test_numbers_and_units_on_different_lines_do_not_match():
     prompt = "There are 10\nwords in this list."
     result = predict_output_tokens(prompt)
-    assert result.tokens == 50
+    # The new floor is 150 for fallback estimates
+    assert result.tokens == 150
     assert "No explicit length cue" in result.reason
+
+
+def test_proportional_scaling_bounds():
+    # Small prompt (10 words) -> ~14 input tokens -> floored at 150
+    result_small = predict_output_tokens("word " * 10)
+    assert result_small.tokens == 150
+
+    # Medium prompt (1000 words) -> ~1350 input tokens -> ~405 expected output tokens
+    result_medium = predict_output_tokens("word " * 1000)
+    assert result_medium.tokens == 405
+
+    # Massive prompt (20000 words) -> ~27000 input tokens -> 8100 expected -> capped at 4096
+    result_massive = predict_output_tokens("word " * 20000)
+    assert result_massive.tokens == 4096
+
+
+def test_messy_multiline_vs_clean_single_paragraph_prompt():
+    # Clean single paragraph prompt of 300 words
+    clean_prompt = "word " * 300
+
+    # Messy prompt of 300 words with 50+ blank lines and irregular spacing
+    prompt_words = ["word"] * 300
+    messy_lines = []
+    for i, word in enumerate(prompt_words):
+        messy_lines.append(word)
+        if i % 5 == 0:
+            messy_lines.append("")  # insert empty line
+            messy_lines.append("   ")  # line with spaces
+    messy_prompt = "\n".join(messy_lines)
+
+    result_clean = predict_output_tokens(clean_prompt)
+    result_messy = predict_output_tokens(messy_prompt)
+
+    # Assert messy prompt estimate is NOT anomalously small (e.g. not close to 10)
+    assert result_messy.tokens >= 150
+    # Assert they produce the exact same (or very close) token estimate
+    assert result_clean.tokens == result_messy.tokens
+
 
