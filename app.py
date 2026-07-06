@@ -121,6 +121,13 @@ with st.sidebar:
         f"${model.output_price_per_million:.3f}/1M out"
     )
 
+    try:
+        import subprocess
+        commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL).decode("utf-8").strip()
+    except Exception:
+        commit_hash = "unknown"
+    st.caption(f"**App Version:** `{commit_hash}`")
+
 # --- Main: prompt input --------------------------------------------------
 prompt = st.text_area(
     "Prompt",
